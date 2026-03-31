@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone Master Pro — Ремонт смартфонів у Прилуках</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #0f172a;
+            --accent: #10b981;
+            --accent-glow: rgba(16, 185, 129, 0.4);
+            --bg: #020617;
+            --card-bg: rgba(30, 41, 59, 0.5);
+            --text-white: #f8fafc;
+            --text-dim: #94a3b8;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-white);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* --- СКРОЛ-ІНДИКАТОР --- */
+        #scroll-progress {
+            position: fixed; top: 0; left: 0; width: 0%; height: 4px;
+            background: linear-gradient(90deg, var(--accent), #34d399);
+            z-index: 1000; transition: width 0.1s;
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+        /* --- HERO SECTION з анімованим градієнтом --- */
+        .hero {
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            text-align: center; position: relative;
+            background: radial-gradient(circle at 50% 50%, #1e293b 0%, #020617 100%);
+        }
+
+        .hero-glow {
+            position: absolute; width: 40vw; height: 40vw;
+            background: var(--accent); filter: blur(150px);
+            opacity: 0.1; top: 20%; left: 30%; z-index: 0;
+            animation: moveGlow 10s infinite alternate;
+        }
+
+        @keyframes moveGlow {
+            from { transform: translate(-10%, -10%); }
+            to { transform: translate(10%, 10%); }
+        }
+
+        .hero-content { position: relative; z-index: 10; }
+
+        /* Статус "В мережі" */
+        .status-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent);
+            color: var(--accent); padding: 6px 14px; border-radius: 20px;
+            font-size: 0.85rem; font-weight: 600; margin-bottom: 24px;
+        }
+
+        .status-dot {
+            width: 8px; height: 8px; background: var(--accent);
+            border-radius: 50%; box-shadow: 0 0 10px var(--accent);
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink { 50% { opacity: 0.3; } }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 10vw, 5rem); font-weight: 800;
+            letter-spacing: -0.04em; line-height: 1; margin-bottom: 24px;
+            background: linear-gradient(to bottom, #fff, #94a3b8);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: clamp(1rem, 4vw, 1.25rem); color: var(--text-dim);
+            max-width: 600px; margin: 0 auto 40px;
+        }
+
+        /* --- Кнопка "Написати" з ефектом сяйва --- */
+        .btn-glow {
+            padding: 20px 40px; background: var(--accent); color: white;
+            text-decoration: none; border-radius: 16px; font-weight: 700;
+            font-size: 1.1rem; display: inline-block; transition: var(--transition);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .btn-glow:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 0 40px var(--accent-glow);
+            filter: brightness(1.1);
+        }
+
+        /* --- КАРТКИ (Glassmorphism) --- */
+        .section-header { text-align: center; margin-bottom: 60px; }
+        .section-header h2 { font-size: 2.5rem; letter-spacing: -0.02em; }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+
+        .card {
+            background: var(--card-bg); backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border); padding: 40px;
+            border-radius: 32px; transition: var(--transition);
+        }
+
+        .card:hover {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: var(--accent);
+            transform: translateY(-10px);
+        }
+
+        .icon {
+            width: 56px; height: 56px; background: rgba(16, 185, 129, 0.1);
+            color: var(--accent); border-radius: 16px; display: flex;
+            align-items: center; justify-content: center; margin-bottom: 24px;
+        }
+
+        /* --- ІНТЕРАКТИВНИЙ КАЛЬКУЛЯТОР --- */
+        .quiz-section { background: #0f172a; padding: 100px 0; border-radius: 60px 60px 0 0; }
+
+        .quiz-container {
+            background: var(--bg); padding: 40px; border-radius: 40px;
+            border: 1px solid var(--glass-border); max-width: 700px; margin: 0 auto;
+        }
+
+        .quiz-option {
+            background: var(--card-bg); border: 1px solid var(--glass-border);
+            padding: 16px 24px; border-radius: 16px; margin-bottom: 12px;
+            cursor: pointer; transition: var(--transition); display: flex;
+            justify-content: space-between; align-items: center;
+        }
+
+        .quiz-option:hover { border-color: var(--accent); background: rgba(16, 185, 129, 0.05); }
+        .quiz-option.selected { border-color: var(--accent); background: var(--accent); color: white; }
+
+        #quiz-result {
+            margin-top: 30px; padding: 20px; border-radius: 20px;
+            background: rgba(16, 185, 129, 0.1); display: none; text-align: center;
+        }
+
+        /* --- FAQ (Аккордеон) --- */
+        .faq-item {
+            background: var(--card-bg); border-radius: 20px; margin-bottom: 12px;
+            overflow: hidden; cursor: pointer; border: 1px solid var(--glass-border);
+        }
+
+        .faq-question { padding: 20px 30px; font-weight: 600; display: flex; justify-content: space-between; }
+        .faq-answer { padding: 0 30px 20px; color: var(--text-dim); display: none; }
+
+        /* --- FOOTER --- */
+        footer { padding: 60px 0; text-align: center; border-top: 1px solid var(--glass-border); }
+
+        .reveal { opacity: 0; transform: translateY(30px); transition: 0.8s all ease; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* Адаптивність */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 3rem; }
+            .quiz-container { padding: 20px; }
+            .card { padding: 30px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="scroll-progress"></div>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-glow"></div>
+        <div class="container hero-content">
+            <div class="status-badge">
+                <span class="status-dot"></span>
+                В мережі — Приймаю замовлення
+            </div>
+            <h1>Phone Master Pro</h1>
+            <p>Елітний ремонт техніки у Прилуках. Від заміни екрану до відновлення плат. Робимо те, від чого інші відмовляються.</p>
+            <a href="https://web.telegram.org/k/#@mstekh" class="btn-glow">Миттєвий запис</a>
+        </div>
+    </section>
+
+    <!-- ПОСЛУГИ -->
+    <section style="padding: 100px 0;">
+        <div class="container">
+            <div class="section-header reveal">
+                <h2>Наші спеціалізації</h2>
+            </div>
+            <div class="grid">
+                <div class="card reveal">
+                    <div class="icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></div>
+                    <h3>Експрес-заміна</h3>
+                    <p>Екрани та акумулятори міняємо за 30-40 хвилин. Використовуємо заводські проклейки для вологозахисту.</p>
+                </div>
+                <div class="card reveal">
+                    <div class="icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.7-3.7a1 1 0 000-1.4l-1.6-1.6a1 1 0 00-1.4 0l-3.7 3.7z"></path><path d="M20 11v9a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2h9"></path></svg></div>
+                    <h3>Мікро-пайка</h3>
+                    <p>Відновлення після короткого замикання, реболлінг процесорів та заміна контролерів живлення.</p>
+                </div>
+                <div class="card reveal">
+                    <div class="icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg></div>
+                    <h3>Перенос даних</h3>
+                    <p>Навіть з розбитого вщент пристрою. Повна конфіденційність вашої особистої інформації.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ІНТЕРАКТИВНА ДІАГНОСТИКА -->
+    <section class="quiz-section">
+        <div class="container">
+            <div class="section-header reveal">
+                <h2>Швидка оцінка ремонту</h2>
+                <p>Оберіть симптом, щоб дізнатися прогноз</p>
+            </div>
+            
+            <div class="quiz-container reveal">
+                <div class="quiz-option" onclick="checkRepair('screen')">Розбите скло / екран <span>➔</span></div>
+                <div class="quiz-option" onclick="checkRepair('battery')">Швидко розряджається <span>➔</span></div>
+                <div class="quiz-option" onclick="checkRepair('water')">Впав у воду <span>➔</span></div>
+                <div class="quiz-option" onclick="checkRepair('power')">Не вмикається взагалі <span>➔</span></div>
+
+                <div id="quiz-result">
+                    <h3 id="res-title"></h3>
+                    <p id="res-desc" style="color: var(--text-dim); margin-top: 10px;"></p>
+                    <a href="https://t.me/username" class="btn-glow" style="margin-top: 20px; padding: 12px 24px; font-size: 0.9rem;">Забронювати час</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section style="padding: 100px 0;">
+        <div class="container">
+            <div class="section-header reveal">
+                <h2>Питання та відповіді</h2>
+            </div>
+            <div style="max-width: 800px; margin: 0 auto;">
+                <div class="faq-item reveal">
+                    <div class="faq-question">Чи зберігаються мої фото та контакти? <span>+</span></div>
+                    <div class="faq-answer">Так, ми завжди пріоритезуємо збереження даних. Якщо ремонт вимагає скидання налаштувань, ми обов'язково попередимо вас заздалегідь.</div>
+                </div>
+                <div class="faq-item reveal">
+                    <div class="faq-question">Яку гарантію ви надаєте? <span>+</span></div>
+                    <div class="faq-answer">Ми надаємо гарантію від 3 до 12 місяців на встановлені запчастини та виконану роботу. Ви отримуєте гарантійний талон.</div>
+                </div>
+                <div class="faq-item reveal">
+                    <div class="faq-question">Скільки триває діагностика? <span>+</span></div>
+                    <div class="faq-answer">Первинна діагностика у вашій присутності — безкоштовно. Складна діагностика плати може тривати від 1 до 3 днів.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <p style="font-weight: 700; color: white; margin-bottom: 10px;">Phone Master Pro</p>
+            <p style="color: var(--text-dim);"> м. Прилуки, Центр • +38 (0XX) XXX XX XX</p>
+            <p style="margin-top: 30px; font-size: 0.8rem; color: var(--text-dim);">© 2026 Всі права захищені. Найкращий сервіс у вашому місті.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Скрол-прогрес
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("scroll-progress").style.width = scrolled + "%";
+        };
+
+        // Діагностика
+        function checkRepair(type) {
+            const res = document.getElementById('quiz-result');
+            const title = document.getElementById('res-title');
+            const desc = document.getElementById('res-desc');
+            
+            res.style.display = 'block';
+            
+            if(type === 'screen') {
+                title.innerText = "Ремонт: 40-60 хв";
+                desc.innerText = "Маємо оригінали в наявності. Встановимо при вас, збережемо вологозахист.";
+            } else if(type === 'battery') {
+                title.innerText = "Ремонт: 20-30 хв";
+                desc.innerText = "Заміна на посилений акумулятор з гарантією 6 місяців. Забудьте про павербанки.";
+            } else if(type === 'water') {
+                title.innerText = "Терміново несіть до нас!";
+                desc.innerText = "Кожна година важлива. Проведемо ультразвукову чистку та зупинимо корозію.";
+            } else if(type === 'power') {
+                title.innerText = "Потрібна діагностика (1-2 дні)";
+                desc.innerText = "Ймовірно проблема в ланцюгу живлення. Перевіримо плату та відновимо.";
+            }
+            
+            window.scrollTo({ top: res.offsetTop + 400, behavior: 'smooth' });
+        }
+
+        // FAQ Аккордеон
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const answer = item.querySelector('.faq-answer');
+                const isVisible = answer.style.display === 'block';
+                document.querySelectorAll('.faq-answer').forEach(a => a.style.display = 'none');
+                answer.style.display = isVisible ? 'none' : 'block';
+            });
+        });
+
+        // Анімація появи
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>
